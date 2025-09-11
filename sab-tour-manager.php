@@ -37,6 +37,14 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'SAB_TOUR_MANAGER_VERSION', '1.0.0' );
 
+// Define plugin path
+define( 'SAB_PATH', plugin_dir_path( __FILE__ ) );
+
+// Auto-include all PHP files from "controller" folder
+foreach ( glob( SAB_PATH . 'controller/*.php' ) as $file ) {
+    include_once $file;
+}
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-sab-tour-manager-activator.php
