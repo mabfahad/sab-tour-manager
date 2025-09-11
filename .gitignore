@@ -1,0 +1,5 @@
+# Ignore macOS .DS_Store everywhere
+**/.DS_Store
+
+# Ignore PhpStorm / IntelliJ project settings everywhere
+**/.idea/
