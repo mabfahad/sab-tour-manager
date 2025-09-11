@@ -156,6 +156,7 @@ class Sab_Tour_Manager {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+        $this->loader->add_action( 'plugins_loaded', $plugin_admin, 'sab_crb_load' );
 
 	}
 

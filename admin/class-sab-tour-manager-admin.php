@@ -100,4 +100,12 @@ class Sab_Tour_Manager_Admin {
 
 	}
 
+    public function sab_crb_load()
+    {
+        if (!class_exists('Carbon_Fields\Carbon_Fields')) {
+            require_once SAB_PATH . 'vendor/autoload.php';
+        }
+        \Carbon_Fields\Carbon_Fields::boot();
+    }
+
 }

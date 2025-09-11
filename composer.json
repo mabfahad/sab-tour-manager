@@ -1,0 +1,17 @@
+{
+    "name": "fahadabdullah/sab-tour-manager",
+    "autoload": {
+        "psr-4": {
+            "Fahadabdullah\\SabTourManager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fahad Abdullah",
+            "email": "fahad.abdullah1280@gmail.com"
+        }
+    ],
+    "require": {
+        "htmlburger/carbon-fields": "^3.6"
+    }
+}
