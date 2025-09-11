@@ -173,6 +173,8 @@ class Sab_Tour_Manager {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_filter('template_include', $plugin_public, 'include_template_for_tour_manager');
+        // Load template for Trips CPT archive
+        $this->loader->add_filter('template_include', $plugin_public, 'load_trips_archive_template');
 
 	}
 

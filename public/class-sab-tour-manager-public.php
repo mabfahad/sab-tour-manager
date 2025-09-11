@@ -111,4 +111,17 @@ class Sab_Tour_Manager_Public {
         return $template;
     }
 
+    /**
+     * Load plugin template for Trips CPT archive
+     */
+    public function load_trips_archive_template($template) {
+        if (is_post_type_archive('trips')) {
+            $plugin_template = SAB_PATH . 'public/partials/trips-archive.php';
+            if (file_exists($plugin_template)) {
+                return $plugin_template;
+            }
+        }
+        return $template; // fallback to theme
+    }
+
 }
