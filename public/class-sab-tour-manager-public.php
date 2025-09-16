@@ -106,8 +106,8 @@ class Sab_Tour_Manager_Public
 
     public function include_template_for_tour_manager($template)
     {
-        $page = new \controller\Sab_Page('tour-booking'); // page slug
-        if (is_page($page->get_page_id())) {
+        $page = new \controller\Sab_Page(); // page slug
+        if (is_page($page->get_page_id('tour-booking'))) {
             $plugin_template = SAB_PATH . 'public/partials/sab-tour-manager-public-display.php';
             if (file_exists($plugin_template)) {
                 return $plugin_template;

@@ -34,11 +34,8 @@ class Sab_Tour_Manager_Activator {
         $create_table->create_table();
 
         $page = new \controller\Sab_Page();
-        $page->create_page(
-            'sab-tour-manager',
-            __( 'Tour Manager', 'sab-tour-manager' ),
-
-        );
+        $page->create_page('Tour Manager', 'sab-tour-manager');
+        $page->create_page('All Tours', 'sab-all-tours');
 
 	}
 
