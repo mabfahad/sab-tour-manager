@@ -107,13 +107,21 @@ class Sab_Ajax
                     <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date, $end_date)); ?></p>
                     <p class="trip-price">From SEK <?php echo esc_html($price_val); ?></p>
                 </div>
-                <div class="trip-featured-image">
-                    <?php if (has_post_thumbnail()) {
-                        the_post_thumbnail('medium_large', ['alt' => get_the_title()]);
-                    } ?>
-                </div>
+                <a href="<?php the_permalink(); ?>">
+                    <div class="trip-featured-image">
+                        <?php
+                        if (has_post_thumbnail()) {
+                            the_post_thumbnail('medium_large', ['alt' => get_the_title()]);
+                        } else {
+                            // Fallback image from plugin folder
+                            $fallback_image = SAB_URL . '/img/fallbackimage.jpg';
+                            echo '<img src="' . esc_url($fallback_image) . '" alt="' . esc_attr(get_the_title()) . '" />';
+                        }
+                        ?>
+                    </div>
+                </a>
                 <div class="trip-content">
-                    <h3 class="trip-title"><?php the_title(); ?></h3>
+                    <a href="<?php the_permalink();?>"><h3 class="trip-title"><?php the_title(); ?></h3></a>
                     <p class="trip-description"><?php echo wp_trim_words(get_the_excerpt(), 20, '...'); ?></p>
                     <div class="readmore-wrapper">
                         <a href="<?php the_permalink(); ?>" class="trip-read-more"><?php _e('Read more', 'sab-tour-manager'); ?></a>
@@ -136,6 +144,7 @@ class Sab_Ajax
         $filter_data = isset($_POST['filterData']) ? $_POST['filterData'] : [];
         $filters     = $this->sanitize_filter($filter_data);
         $args        = $this->build_query_args($filters);
+//        echo "<pre>";print_r($args);echo "</pre>";exit();
 
         $query = new \WP_Query($args);
 
