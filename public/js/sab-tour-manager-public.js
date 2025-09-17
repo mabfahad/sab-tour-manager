@@ -65,7 +65,6 @@
                 success: response => {
                     const html = response.success ? response.data.html : '<p>No trips found.</p>';
                     $('.all-travel-types-list-items').html(html).css('opacity', '1');
-                    toggleFilterModal(false);
                 }
             });
         };
@@ -122,6 +121,8 @@
             e.preventDefault();
             const filterData = getFilterData();
             applyFilter(filterData);
+            $('.filter-modal').fadeOut(); 
+
         });
 
     });

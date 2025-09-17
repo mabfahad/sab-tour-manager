@@ -102,7 +102,7 @@ class Sab_Ajax
             $type       = get_post_meta(get_the_ID(), '_trip_type', true);
             ?>
             <div class="all-travel-types-list-item">
-                <div class="travel-tag"><?php echo esc_html($type); ?></div>
+                <?php if ($type != ""){echo '<div class="travel-tag">'.esc_html($type).'</div>';}?>
                 <div class="trip-duration-price">
                     <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date, $end_date)); ?></p>
                     <p class="trip-price">From SEK <?php echo esc_html($price_val); ?></p>
@@ -132,6 +132,7 @@ class Sab_Ajax
      */
     public function filter_trips_callback()
     {
+        $helpers = new Sab_Helpers();
         $filter_data = isset($_POST['filterData']) ? $_POST['filterData'] : [];
         $filters     = $this->sanitize_filter($filter_data);
         $args        = $this->build_query_args($filters);
@@ -144,7 +145,8 @@ class Sab_Ajax
             wp_send_json_success([
                 'html'      => $html,
                 'paged'     => $filters['paged'],
-                'max_pages' => $query->max_num_pages
+                'max_pages' => $query->max_num_pages,
+                'pagination' => $helpers->sab_custom_pagination($filters['paged'],$query->max_num_pages)
             ]);
         } else {
             wp_send_json_error(['message' => 'No trips found.']);

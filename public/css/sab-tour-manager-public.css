@@ -13,7 +13,7 @@ body {
 .destinations-wrapper {
     /*max-width: 944px;*/
     width: 100%;
-    margin: 0 auto;
+    margin: 30px auto;
 }
 
 .destination-form-inner {

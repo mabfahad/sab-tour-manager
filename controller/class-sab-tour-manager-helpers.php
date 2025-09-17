@@ -19,61 +19,56 @@ class Sab_Helpers
 
     }
 
-    public function sab_custom_pagination($query = null)
+    public function sab_custom_pagination($paged, $max_pages)
     {
-        if (!$query) {
-            global $wp_query;
-            $query = $wp_query;
-        }
-
-        $total_pages = $query->max_num_pages;
-        $current_page = max(1, get_query_var('paged'));
+        $total_pages  = $max_pages;
+        $current_page = $paged;
 
         if ($total_pages <= 1) {
-            return; // no pagination needed
+            return ''; // no pagination needed
         }
 
-        echo '<div class="all-travel-types-pagination">';
-        echo '<div class="all-travel-types-pagination-inner">';
+        $html = '<div class="all-travel-types-pagination-inner">';
 
         // Previous button
         if ($current_page > 1) {
-            echo '<a href="' . get_pagenum_link($current_page - 1) . '" class="all-travel-pagination-prev-btn">Previous</a>';
+            $html .= '<a href="' . get_pagenum_link($current_page - 1) . '" class="all-travel-pagination-prev-btn">Previous</a>';
         } else {
-            echo '<span class="all-travel-pagination-prev-btn disabled">Previous</span>';
+            $html .= '<span class="all-travel-pagination-prev-btn disabled">Previous</span>';
         }
 
         // Page numbers
-        echo '<div class="all-travel-types-pagination-numbers">';
+        $html .= '<div class="all-travel-types-pagination-numbers">';
         $dots_shown = false;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-
             // Show first 2, last 2, and 2 around current
             if ($i <= 2 || $i > $total_pages - 2 || ($i >= $current_page - 1 && $i <= $current_page + 1)) {
                 $active = ($i == $current_page) ? ' active' : '';
-                echo '<a href="' . get_pagenum_link($i) . '" class="all-travel-pagination-number' . $active . '">' . $i . '</a>';
+                $html  .= '<a href="' . get_pagenum_link($i) . '" class="all-travel-pagination-number' . $active . '">' . $i . '</a>';
                 $dots_shown = false;
             } else {
                 if (!$dots_shown) {
-                    echo '<span class="all-travel-pagination-dots">..</span>';
+                    $html .= '<span class="all-travel-pagination-dots">..</span>';
                     $dots_shown = true;
                 }
             }
         }
 
-        echo '</div>'; // close numbers
+        $html .= '</div>'; // close numbers
 
         // Next button
         if ($current_page < $total_pages) {
-            echo '<a href="' . get_pagenum_link($current_page + 1) . '" class="all-travel-pagination-next-btn">Next</a>';
+            $html .= '<a href="' . get_pagenum_link($current_page + 1) . '" class="all-travel-pagination-next-btn">Next</a>';
         } else {
-            echo '<span class="all-travel-pagination-next-btn disabled">Next</span>';
+            $html .= '<span class="all-travel-pagination-next-btn disabled">Next</span>';
         }
 
-        echo '</div>'; // close inner
-        echo '</div>'; // close outer
+        $html .= '</div>'; // close inner
+
+        return $html;
     }
+
 
     public function sab_trip_duration($start_date, $end_date){
         $start_date = get_post_meta(get_the_ID(), '_trip_start_date', true);

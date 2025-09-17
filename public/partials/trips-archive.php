@@ -68,7 +68,7 @@ $query = new WP_Query($args);
                 ?>
                     <div class="all-travel-types-list-item">
 
-                        <div class="travel-tag"><?php echo esc_html($type)?></div>
+                        <?php if ($type != ""){echo '<div class="travel-tag">'.esc_html($type).'</div>';}?>
 
                         <div class="trip-duration-price">
                             <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date,$end_date))?></p>
@@ -98,7 +98,9 @@ $query = new WP_Query($args);
     </div>
 
     <!-- Custom Pagination -->
-    <?php $trip_helpers->sab_custom_pagination($query); ?>
+    <div class="all-travel-types-pagination">
+        <?php echo $trip_helpers->sab_custom_pagination($paged, $query->max_num_pages); ?>
+    </div>
 
 </div>
 
