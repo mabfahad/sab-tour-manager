@@ -3,7 +3,7 @@
  * included in this file.
  */
 body {
-    width: 80%;
+    /*width: 80%;*/
     margin: auto;
     padding: 50px 0;
     background: #FDFCF2;
@@ -12,7 +12,7 @@ body {
 
 .destinations-wrapper {
     /*max-width: 944px;*/
-    width: 100%;
+    width: 80%;
     margin: 30px auto;
 }
 
@@ -59,7 +59,8 @@ select.destination-locations:focus {
 
 /*All trips css*/
 .all-travel-types-main {
-    width: 100%;
+    width: 80%;
+    margin: 30px auto;
 }
 
 .all-travel-types-list-items {
@@ -304,6 +305,10 @@ a.all-travel-pagination-number.active {
 }
 
 /*Single Trip*/
+.trip-details-single-main-wrapper{
+    width: 80%;
+    margin: 30px auto;
+}
 .trip-details-breadcrumbs a, .trip-details-breadcrumbs span {
     color: #505968;
     text-decoration: none;
