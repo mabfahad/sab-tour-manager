@@ -8,6 +8,9 @@ class Sab_Ajax
     {
         add_action('wp_ajax_filter_trips', [$this, 'filter_trips_callback']);
         add_action('wp_ajax_nopriv_filter_trips', [$this, 'filter_trips_callback']);
+
+        add_action('wp_ajax_trip_details', [$this, 'trip_details_callback']);
+        add_action('wp_ajax_nopriv_trip_details', [$this, 'trip_details_callback']);
     }
 
     /**
@@ -43,10 +46,10 @@ class Sab_Ajax
     private function build_query_args($filters)
     {
         $args = [
-            'post_type'      => 'trips',
+            'post_type' => 'trips',
             'posts_per_page' => 9,
-            'paged'          => $filters['paged'],
-            'meta_query'     => [],
+            'paged' => $filters['paged'],
+            'meta_query' => [],
         ];
 
         // Taxonomy filter
@@ -54,8 +57,8 @@ class Sab_Ajax
             $args['tax_query'] = [
                 [
                     'taxonomy' => 'destinations',
-                    'field'    => 'slug',
-                    'terms'    => $filters['destinations'],
+                    'field' => 'slug',
+                    'terms' => $filters['destinations'],
                 ],
             ];
         }
@@ -63,10 +66,10 @@ class Sab_Ajax
         // Price filter
         if (!empty($filters['price']['min']) && !empty($filters['price']['max'])) {
             $args['meta_query'][] = [
-                'key'     => '_trip_price',
-                'value'   => [$filters['price']['min'], $filters['price']['max']],
+                'key' => '_trip_price',
+                'value' => [$filters['price']['min'], $filters['price']['max']],
                 'compare' => 'BETWEEN',
-                'type'    => 'NUMERIC'
+                'type' => 'NUMERIC'
             ];
         }
 
@@ -85,24 +88,26 @@ class Sab_Ajax
             $query->the_post();
 
             $start_date = get_post_meta(get_the_ID(), '_trip_start_date', true);
-            $end_date   = get_post_meta(get_the_ID(), '_trip_end_date', true);
+            $end_date = get_post_meta(get_the_ID(), '_trip_end_date', true);
 
             // Skip posts outside duration range
             if ($start_date && $end_date) {
                 $start = new \DateTime($start_date);
-                $end   = new \DateTime($end_date);
-                $days  = $start->diff($end)->days + 1;
+                $end = new \DateTime($end_date);
+                $days = $start->diff($end)->days + 1;
 
                 if ($days < $duration_min || $days > $duration_max) {
                     continue;
                 }
             }
 
-            $price_val  = get_post_meta(get_the_ID(), '_trip_price', true);
-            $type       = get_post_meta(get_the_ID(), '_trip_type', true);
+            $price_val = get_post_meta(get_the_ID(), '_trip_price', true);
+            $type = get_post_meta(get_the_ID(), '_trip_type', true);
             ?>
             <div class="all-travel-types-list-item">
-                <?php if ($type != ""){echo '<div class="travel-tag">'.esc_html($type).'</div>';}?>
+                <?php if ($type != "") {
+                    echo '<div class="travel-tag">' . esc_html($type) . '</div>';
+                } ?>
                 <div class="trip-duration-price">
                     <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date, $end_date)); ?></p>
                     <p class="trip-price">From SEK <?php echo esc_html($price_val); ?></p>
@@ -121,10 +126,11 @@ class Sab_Ajax
                     </div>
                 </a>
                 <div class="trip-content">
-                    <a href="<?php the_permalink();?>"><h3 class="trip-title"><?php the_title(); ?></h3></a>
+                    <a href="<?php the_permalink(); ?>"><h3 class="trip-title"><?php the_title(); ?></h3></a>
                     <p class="trip-description"><?php echo wp_trim_words(get_the_excerpt(), 20, '...'); ?></p>
                     <div class="readmore-wrapper">
-                        <a href="<?php the_permalink(); ?>" class="trip-read-more"><?php _e('Read more', 'sab-tour-manager'); ?></a>
+                        <a href="<?php the_permalink(); ?>"
+                           class="trip-read-more"><?php _e('Read more', 'sab-tour-manager'); ?></a>
                     </div>
                 </div>
             </div>
@@ -142,8 +148,8 @@ class Sab_Ajax
     {
         $helpers = new Sab_Helpers();
         $filter_data = isset($_POST['filterData']) ? $_POST['filterData'] : [];
-        $filters     = $this->sanitize_filter($filter_data);
-        $args        = $this->build_query_args($filters);
+        $filters = $this->sanitize_filter($filter_data);
+        $args = $this->build_query_args($filters);
 //        echo "<pre>";print_r($args);echo "</pre>";exit();
 
         $query = new \WP_Query($args);
@@ -152,10 +158,10 @@ class Sab_Ajax
             $html = $this->render_trips_html($query, $filters['duration']['min'], $filters['duration']['max']);
 
             wp_send_json_success([
-                'html'      => $html,
-                'paged'     => $filters['paged'],
+                'html' => $html,
+                'paged' => $filters['paged'],
                 'max_pages' => $query->max_num_pages,
-                'pagination' => $helpers->sab_custom_pagination($filters['paged'],$query->max_num_pages)
+                'pagination' => $helpers->sab_custom_pagination($filters['paged'], $query->max_num_pages)
             ]);
         } else {
             wp_send_json_error(['message' => 'No trips found.']);
@@ -163,6 +169,36 @@ class Sab_Ajax
 
         wp_die();
     }
+
+    public function trip_details_callback()
+    {
+        // Make sure we have a trip ID
+        if (empty($_POST['tripId'])) {
+            wp_send_json_error(['message' => 'No trip ID provided.']);
+        }
+
+        $trip_id = absint($_POST['tripId']);
+        $title = get_the_title($trip_id);
+
+        if (!$title) {
+            wp_send_json_error(['message' => 'Trip not found.']);
+        }
+
+        // Optionally, you can send more data like price, duration, etc.
+        $start_date = get_post_meta($trip_id, '_trip_start_date', true);
+        $end_date = get_post_meta($trip_id, '_trip_end_date', true);
+        $price = get_post_meta($trip_id, '_trip_price', true);
+
+        wp_send_json_success([
+            'title' => $title,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'price' => $price
+        ]);
+
+        wp_die();
+    }
+
 }
 
 new Sab_Ajax();

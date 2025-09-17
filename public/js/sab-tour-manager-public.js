@@ -165,6 +165,17 @@
             applyFilter(filterData);
         });
 
+        // Open modal when clicking any "Contact us" button
+        $('.trip-details-single-main-wrapper button').on('click', function(e){
+            e.preventDefault();
+            $('.contact-suggestion-modal').fadeIn();
+        });
+
+        // Close modal
+        $('.contact-modal-close, .contact-modal-overlay, .title-close-button .close-button').on('click', function(){
+            $('.contact-suggestion-modal').fadeOut();
+        });
+
     });
 
 })(jQuery);
