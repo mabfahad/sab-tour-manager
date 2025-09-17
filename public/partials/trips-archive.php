@@ -49,7 +49,7 @@ $query = new WP_Query($args);
             </div>
             <div class="all-travels-filter-button">
                 <button>
-                    <img src="<?php echo plugin_dir_url(__FILE__); ?>../img/filter-icon.svg">
+                    <img src="<?php echo SAB_URL."/img/filter-icon.svg"?>">
                     <span><?php _e('Filter', 'sab-tour-manager'); ?></span>
                 </button>
             </div>
@@ -60,14 +60,20 @@ $query = new WP_Query($args);
     <div class="all-travel-types-list-main">
         <div class="all-travel-types-list-items">
             <?php if ($query->have_posts()) : ?>
-                <?php while ($query->have_posts()) : $query->the_post(); ?>
+                <?php while ($query->have_posts()) : $query->the_post();
+                    $start_date = get_post_meta(get_the_ID(), '_trip_start_date', true);
+                    $end_date   = get_post_meta(get_the_ID(), '_trip_end_date', true);
+                    $price   = get_post_meta(get_the_ID(), '_trip_price', true);
+                    $type       = get_post_meta(get_the_ID(), '_trip_type', true);
+                    $destinations = wp_get_post_terms(get_the_ID(), 'destinations', ['fields' => 'names']);
+                ?>
                     <div class="all-travel-types-list-item">
 
-                        <div class="travel-tag">Ny</div>
+                        <div class="travel-tag"><?php echo esc_html($type)?></div>
 
                         <div class="trip-duration-price">
-                            <p class="trip-duration">16 Days</p>
-                            <p class="trip-price">From SEK 16,990</p>
+                            <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date,$end_date))?></p>
+                            <p class="trip-price">From SEK <?php echo esc_html($price);?></p>
                         </div>
 
                         <div class="trip-featured-image">

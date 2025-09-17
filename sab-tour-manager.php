@@ -39,6 +39,8 @@ define( 'SAB_TOUR_MANAGER_VERSION', '1.0.0' );
 
 // Define plugin path
 define( 'SAB_PATH', plugin_dir_path( __FILE__ ) );
+// Define plugin URL
+define( 'SAB_URL', plugin_dir_url( __FILE__ ) );
 
 // Auto-include all PHP files from "controller" folder
 foreach ( glob( SAB_PATH . 'controller/*.php' ) as $file ) {

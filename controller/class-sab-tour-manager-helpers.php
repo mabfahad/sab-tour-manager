@@ -74,4 +74,22 @@ class Sab_Helpers
         echo '</div>'; // close inner
         echo '</div>'; // close outer
     }
+
+    public function sab_trip_duration($start_date, $end_date){
+        $start_date = get_post_meta(get_the_ID(), '_trip_start_date', true);
+        $end_date   = get_post_meta(get_the_ID(), '_trip_end_date', true);
+
+        $days = 0;
+
+        if ($start_date && $end_date) {
+            $start = new \DateTime($start_date);
+            $end   = new \DateTime($end_date);
+            $diff  = $start->diff($end);
+            $days  = $diff->days + 1; // +1 if you want to include both start and end day
+        }
+
+        return $days . ' Days';
+
+
+    }
 }

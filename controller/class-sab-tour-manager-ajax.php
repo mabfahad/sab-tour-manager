@@ -12,6 +12,7 @@ class Sab_Ajax
 
     public function filter_trips_callback()
     {
+        $trip_helpers = new Sab_Helpers();
         $destination = isset($_POST['destination']) ? sanitize_text_field($_POST['destination']) : '';
         $paged       = isset($_POST['paged']) ? absint($_POST['paged']) : 1;
 
@@ -41,11 +42,11 @@ class Sab_Ajax
                 ?>
                 <div class="all-travel-types-list-item">
 
-                    <div class="travel-tag">Ny</div>
+                    <div class="travel-tag"><?php echo esc_html($type)?></div>
 
                     <div class="trip-duration-price">
-                        <p class="trip-duration">16 Days</p>
-                        <p class="trip-price">From SEK 16,990</p>
+                        <p class="trip-duration"><?php echo esc_html($trip_helpers->sab_trip_duration($start_date,$end_date))?></p>
+                        <p class="trip-price">From SEK <?php echo esc_html($price);?></p>
                     </div>
 
                     <div class="trip-featured-image">
