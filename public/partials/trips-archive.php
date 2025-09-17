@@ -65,7 +65,6 @@ $query = new WP_Query($args);
                     $end_date   = get_post_meta(get_the_ID(), '_trip_end_date', true);
                     $price   = get_post_meta(get_the_ID(), '_trip_price', true);
                     $type       = get_post_meta(get_the_ID(), '_trip_type', true);
-                    $destinations = wp_get_post_terms(get_the_ID(), 'destinations', ['fields' => 'names']);
                 ?>
                     <div class="all-travel-types-list-item">
 

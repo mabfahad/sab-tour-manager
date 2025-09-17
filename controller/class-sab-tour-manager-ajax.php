@@ -39,6 +39,10 @@ class Sab_Ajax
             ob_start();
             while ($query->have_posts()) {
                 $query->the_post();
+                $start_date = get_post_meta(get_the_ID(), '_trip_start_date', true);
+                $end_date   = get_post_meta(get_the_ID(), '_trip_end_date', true);
+                $price   = get_post_meta(get_the_ID(), '_trip_price', true);
+                $type       = get_post_meta(get_the_ID(), '_trip_type', true);
                 ?>
                 <div class="all-travel-types-list-item">
 
