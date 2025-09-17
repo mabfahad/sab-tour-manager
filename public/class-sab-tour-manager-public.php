@@ -104,6 +104,7 @@ class Sab_Tour_Manager_Public
         wp_enqueue_script('jquery');
         wp_localize_script($this->plugin_name, 'tripsData', [
             'ajaxUrl'    => admin_url('admin-ajax.php'),
+            'nonce'   => wp_create_nonce('trip_contact_nonce'),
         ]);
 
     }

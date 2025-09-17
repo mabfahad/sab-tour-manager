@@ -11,6 +11,9 @@ class Sab_Ajax
 
         add_action('wp_ajax_trip_details', [$this, 'trip_details_callback']);
         add_action('wp_ajax_nopriv_trip_details', [$this, 'trip_details_callback']);
+
+        add_action('wp_ajax_trip_contact_form_submit', [$this, 'trip_contact_form_submit']);
+        add_action('wp_ajax_nopriv_trip_contact_form_submit', [$this, 'trip_contact_form_submit']);
     }
 
     /**
@@ -197,6 +200,47 @@ class Sab_Ajax
         ]);
 
         wp_die();
+    }
+
+    public function trip_contact_form_submit()
+    {
+//        echo "<pre>";print_r($_POST);echo "</pre>";exit();
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'trip_contact_nonce')) {
+            wp_send_json_error('Nonce verification failed.');
+        }
+
+        // Sanitize and validate required fields
+        $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
+        $surname = isset($_POST['surname']) ? sanitize_text_field($_POST['surname']) : '';
+        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+        $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+        $trip_title = isset($_POST['trip_title']) ? sanitize_text_field($_POST['trip_title']) : '';
+        $trip_id = isset($_POST['trip_id']) ? intval($_POST['trip_id']) : 0;
+
+        // Validation
+        if (empty($first_name) || empty($surname) || empty($email)) {
+            wp_send_json_error('Please fill all required fields.');
+        }
+
+        if (!is_email($email)) {
+            wp_send_json_error('Please provide a valid email address.');
+        }
+
+        if (!isset($_POST['privacy_policy']) || $_POST['privacy_policy'] !== 'true') {
+            wp_send_json_error('You must accept the privacy policy.');
+        }
+
+
+        $tripDB = new Sab_Db();
+        $tripDB->save_trip_contact(
+            [
+                'first_name' => $first_name, 'surname' => $surname, 'email' => $email, 'phone' => $phone, 'trip_title' => $trip_title, 'trip_id' => $trip_id
+            ]
+        );
+        wp_send_json_success('Your request has been sent.');
+        wp_die();
+
     }
 
 }

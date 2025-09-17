@@ -109,6 +109,7 @@ if (have_posts()) :
                     </div>
                     <div class="contact-form-wrapper">
                         <form action="" class="trip-contact-form">
+                            <?php wp_nonce_field('trip_contact_nonce', 'trip_contact_nonce_field'); ?>
                             <div class="contact-form-main-elements">
                                 <div class="contact-form-title">
                                     <h3>Contact information</h3>
@@ -139,7 +140,7 @@ if (have_posts()) :
 
                                 <div class="form-selected-trip">
                                     <h4>Selected Trip</h4>
-                                    <h3><?php echo esc_html( get_the_title() )?></h3>
+                                    <h3 data-id="<?php echo esc_attr(get_the_ID());?>"><?php echo esc_html( get_the_title() )?></h3>
                                 </div>
                             </div>
 

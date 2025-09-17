@@ -25,7 +25,7 @@ class Sab_Db
     /**
      * Create table
      */
-    public function create_table() : void
+    public function create_table(): void
     {
         $charset_collate = $this->wpdb->get_charset_collate();
 
@@ -42,4 +42,42 @@ class Sab_Db
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta($sql);
     }
+
+    public function save_trip_contact($data)
+{
+    // Validate required fields
+    if (empty($data['trip_id']) || empty($data['first_name']) || empty($data['surname']) || empty($data['email'])) {
+        return false;
+    }
+
+    $table = $this->table_name;
+
+    // Sanitize inputs
+    $trip_id    = intval($data['trip_id']);
+    $first_name = sanitize_text_field($data['first_name']);
+    $surname    = sanitize_text_field($data['surname']);
+    $phone      = isset($data['phone']) ? sanitize_text_field($data['phone']) : '';
+    $email      = sanitize_email($data['email']);
+
+    // Prepare SQL query
+    $sql = $this->wpdb->prepare(
+        "INSERT INTO {$table} (trip_id, first_name, surname, phone, email) VALUES (%d, %s, %s, %s, %s)",
+        $trip_id,
+        $first_name,
+        $surname,
+        $phone,
+        $email
+    );
+
+    // Execute query
+    $result = $this->wpdb->query($sql);
+
+    if ($result !== false) {
+        return (int)$this->wpdb->insert_id; // Return inserted row ID
+    }
+
+    return false;
+}
+
+
 }

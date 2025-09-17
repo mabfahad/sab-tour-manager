@@ -166,15 +166,107 @@
         });
 
         // Open modal when clicking any "Contact us" button
-        $('.trip-details-single-main-wrapper button').on('click', function(e){
+        $('.trip-details-single-main-wrapper button').on('click', function (e) {
             e.preventDefault();
             $('.contact-suggestion-modal').fadeIn();
         });
 
         // Close modal
-        $('.contact-modal-close, .contact-modal-overlay, .title-close-button .close-button').on('click', function(){
+        $('.contact-modal-close, .contact-modal-overlay, .title-close-button .close-button').on('click', function () {
             $('.contact-suggestion-modal').fadeOut();
         });
+
+        // AJAX form submit
+        $('.trip-contact-form').on('submit', function (e) {
+            e.preventDefault();
+
+            const $form = $(this);
+            let isValid = true;
+            let errorMsg = '';
+
+            // Validate required fields except phone
+            $form.find('input[required]').each(function () {
+                if (!$(this).val()) {
+                    isValid = false;
+                    errorMsg = 'Please fill all required fields';
+                    $(this).focus();
+                    return false; // break loop
+                }
+            });
+
+            // Validate email format
+            const emailVal = $form.find('#email').val();
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(emailVal)) {
+                isValid = false;
+                errorMsg = 'Please enter a valid email';
+                $form.find('#email').focus();
+            }
+
+            // Validate privacy checkbox
+            const $privacyCheckbox = $form.find('#privacy-policy');
+            if ($privacyCheckbox.length && !$privacyCheckbox.prop('checked')) {
+                isValid = false;
+                errorMsg = 'You must accept privacy policy';
+                $privacyCheckbox.focus();
+            }
+
+            if (!isValid) {
+                alert(errorMsg);
+                return false; // stop here if validation fails
+            }
+
+            // Prepare AJAX data
+            const data = {
+                action: 'trip_contact_form_submit',
+                nonce: $form.find('input[name="trip_contact_nonce_field"]').val(),
+                first_name: $form.find('#first-name').val(),
+                surname: $form.find('#surname').val(),
+                phone: $form.find('#phone-number').val(),
+                email: $form.find('#email').val(),
+                trip_title: $form.find('.form-selected-trip h3').text(),
+                privacy_policy: $privacyCheckbox.prop('checked'),
+                trip_id: $form.closest('.contact-suggestion-modal')
+                    .find('.form-selected-trip h3')
+                    .data('id')
+            };
+
+            // AJAX submit
+            $.ajax({
+                url: tripsData.ajaxUrl,
+                type: 'POST',
+                data: data,
+                beforeSend: function () {
+                    $form.find('button[type="submit"]').attr('disabled', true).text('Sending...');
+                },
+                success: function (response) {
+                    var $responseDiv = $('.contact-form-response');
+                    $responseDiv.show();
+
+                    if (response.success) {
+                        $responseDiv.html('<p style="color:green;">' + response.data + '</p>');
+                        if ($form.length) {
+                            $form[0].reset();
+                        }
+
+                        // Hide message after 2 seconds
+                        setTimeout(function () {
+                            $('.contact-suggestion-modal').fadeOut();
+                            $responseDiv.hide(); // hide response for next time
+                        }, 2000);
+                        $form.find('button[type="submit"]').attr('disabled', false).text('Send');
+                    } else {
+                        $responseDiv.html('<p style="color:red;">' + response.data + '</p>');
+                        $form.find('button[type="submit"]').attr('disabled', false).text('Send');
+                    }
+                },
+                error: function () {
+                    alert('Something went wrong. Please try again.');
+                    $form.find('button[type="submit"]').attr('disabled', false).text('Send');
+                }
+            });
+        });
+
 
     });
 
