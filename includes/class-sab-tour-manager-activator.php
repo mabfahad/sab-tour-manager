@@ -30,13 +30,6 @@ class Sab_Tour_Manager_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-        $create_table = new \controller\Sab_Db();
-        $create_table->create_table();
-
-        $page = new \controller\Sab_Page();
-        $page->create_page('Tour Manager', 'sab-tour-manager');
-        $page->create_page('All Tours', 'sab-all-tours');
-
 	}
 
 }

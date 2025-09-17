@@ -101,13 +101,17 @@ class Sab_Tour_Manager_Public
          */
 
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/sab-tour-manager-public.js', array('jquery'), $this->version, false);
+        wp_enqueue_script('jquery');
+        wp_localize_script($this->plugin_name, 'tripsData', [
+            'ajaxUrl'    => admin_url('admin-ajax.php'),
+        ]);
 
     }
 
     public function include_template_for_tour_manager($template)
     {
         $page = new \controller\Sab_Page(); // page slug
-        if (is_page($page->get_page_id('tour-booking'))) {
+        if (is_page($page->get_page_id('sab-tour-manager'))) {
             $plugin_template = SAB_PATH . 'public/partials/sab-tour-manager-public-display.php';
             if (file_exists($plugin_template)) {
                 return $plugin_template;
