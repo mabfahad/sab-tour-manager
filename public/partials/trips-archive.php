@@ -114,22 +114,24 @@ $query = new WP_Query($args);
         <div class="destinations-wrapper">
             <h3>Destinations</h3>
             <div class="destination-items">
+
+                <!-- "All" option -->
                 <div class="destination-item">
-                    <input type="checkbox" id="all" name="all" <?php echo empty($selected) ? 'checked' : ''; ?>>
+                    <input type="checkbox" id="all" name="destination" value="all" checked>
                     <label for="all">All</label>
                 </div>
-                <?php if ( ! empty( $destinations ) && ! is_wp_error( $destinations ) ) : ?>
-                    <?php foreach( $destinations as $dest ) :
-                        $checked = (!empty($destination) && in_array($dest->slug, (array) $destination)) ? 'checked' : '';
-                        ?>
-                        <div class="destination-item">
-                            <input type="checkbox" id="<?php echo esc_attr($dest->slug); ?>" name="destination[]" value="<?php echo esc_attr($dest->slug); ?>">
-                            <label for="<?php echo esc_attr($dest->slug); ?>"><?php echo esc_html($dest->name); ?></label>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+
+                <?php
+                    foreach ($destinations as $destination) {
+                ?>
+                <div class="destination-item">
+                    <input type="checkbox" id="<?php echo esc_attr($destination->slug);?>" name="destination[]" value="<?php echo esc_attr($destination->slug);?>">
+                    <label for="<?php echo esc_attr($destination->slug);?>"><?php echo esc_html($destination->name);?></label>
+                </div>
+                        <?php } ?>
             </div>
         </div>
+
 
         <!-- Duration -->
         <div class="duration-filer-wrapper">

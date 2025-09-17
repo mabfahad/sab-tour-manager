@@ -2,83 +2,127 @@
     'use strict';
 
     $(document).ready(function () {
-        // Open filter modal
-        $('.all-travels-filter-button button').on('click', function (e) {
+
+        /**
+         * Open/close filter modal
+         */
+        const toggleFilterModal = (show) => {
+            $('.filter-modal').fadeToggle(show);
+        };
+
+        $('.all-travels-filter-button button').on('click', e => {
             e.preventDefault();
-            alert('ok');
-            $('.filter-modal').fadeIn();
+            toggleFilterModal(true);
         });
 
-        // Close filter modal
-        $('.filter-close-button, .filter-modal-overlay').on('click', function () {
-            $('.filter-modal').fadeOut();
-        });
+        $('.filter-close-button, .filter-modal-overlay').on('click', () => toggleFilterModal(false));
 
-        // Duration slider -> number inputs
-        $('#duration').on('input', function () {
-            var value = $(this).val();
-            $('#duration-min').val(3); // or your min logic
-            $('#duration-max').val(value);
-        });
 
-        // Duration number inputs
-        $('#duration-min, #duration-max').on('input', function () {
-            var min = parseInt($('#duration-min').val()) || 3;
-            var max = parseInt($('#duration-max').val()) || 25;
+        /**
+         * Sync slider with number inputs
+         */
+        const syncSlider = (sliderSelector, minInputSelector, maxInputSelector, defaultMin, defaultMax) => {
+            const $slider = $(sliderSelector),
+                  $min = $(minInputSelector),
+                  $max = $(maxInputSelector);
 
-            // make sure min <= max
-            if (min > max) min = max;
-            if (max < min) max = min;
+            $slider.on('input', () => {
+                const value = parseInt($slider.val()) || defaultMax;
+                $min.val(defaultMin);
+                $max.val(value);
+            });
 
-            $('#duration').val(max); // set slider to max
-            $('#duration-min').val(min);
-            $('#duration-max').val(max);
-        });
+            $min.add($max).on('input', () => {
+                let min = parseInt($min.val()) || defaultMin;
+                let max = parseInt($max.val()) || defaultMax;
 
-        // Taken slider
-        $('#taken').on('input', function () {
-            var value = $(this).val();
-            $('#taken-min').val(16000); // or your min logic
-            $('#taken-max').val(value);
-        });
+                if (min > max) min = max;
+                if (max < min) max = min;
 
-        // Taken number inputs
-        $('#taken-min, #taken-max').on('input', function () {
-            var min = parseInt($('#taken-min').val()) || 16000;
-            var max = parseInt($('#taken-max').val()) || 95000;
+                $slider.val(max);
+                $min.val(min);
+                $max.val(max);
+            });
+        };
 
-            if (min > max) min = max;
-            if (max < min) max = min;
+        // Example: duration and price sliders
+        syncSlider('#duration', '#duration-min', '#duration-max', 3, 25);
+        syncSlider('#taken', '#taken-min', '#taken-max', 16000, 95000);
 
-            $('#taken').val(max);
-            $('#taken-min').val(min);
-            $('#taken-max').val(max);
-        });
 
-        //view_available_trips
-        $('.view_available_trips').on('click', function (e) {
-            e.preventDefault();
-            var selected = $('#destination-locations').val();
+        /**
+         * AJAX filter function
+         */
+        const applyFilter = (filterData) => {
             $.ajax({
-                url: tripsData.ajaxUrl, // localized in PHP
+                url: tripsData.ajaxUrl,
                 type: 'POST',
                 data: {
                     action: 'filter_trips',
-                    destination: selected
+                    filterData
                 },
-                beforeSend: function () {
-                    $('.all-travel-types-list-items').css('opacity', '0.5');
-                },
-                success: function (response) {
-                    if (response.success) {
-                        $('.all-travel-types-list-items').html(response.data.html);
-                    } else {
-                        $('.all-travel-types-list-items').html('<p>No trips found.</p>');
-                    }
-                    $('.all-travel-types-list-items').css('opacity', '1');
+                beforeSend: () => $('.all-travel-types-list-items').css('opacity', '0.5'),
+                success: response => {
+                    const html = response.success ? response.data.html : '<p>No trips found.</p>';
+                    $('.all-travel-types-list-items').html(html).css('opacity', '1');
                 }
             });
-        })
+        };
+
+
+        /**
+         * Handle dropdown selection
+         */
+        $('#destination-locations').on('change', function () {
+            const selected = $(this).val();
+            $('.destination-items input[type="checkbox"]').prop('checked', false);
+            selected === 'all' ? $('#all').prop('checked', true) : $('#' + selected).prop('checked', true);
+        });
+
+        // "All" checkbox logic
+        $(document).on('change', '#all', function () {
+            if ($(this).is(':checked')) $('.destination-items input[name="destination[]"]').prop('checked', false);
+        });
+
+        // Other destinations logic
+        $(document).on('change', '.destination-items input[name="destination[]"]', function () {
+            $('#all').prop('checked', $('.destination-items input[name="destination[]"]:checked').length === 0);
+        });
+
+
+        /**
+         * Build filter data from modal inputs
+         */
+        const getFilterData = () => {
+            let destinations = [];
+            $('.destination-items input[name="destination[]"]:checked').each(function () {
+                destinations.push($(this).val());
+            });
+            if ($('#all').is(':checked')) destinations = ['all'];
+
+            return {
+                destinations,
+                duration: {
+                    min: $('#duration-min').val(),
+                    max: $('#duration-max').val()
+                },
+                price: {
+                    min: $('#taken-min').val(),
+                    max: $('#taken-max').val()
+                }
+            };
+        };
+
+
+        /**
+         * Apply filters on button click
+         */
+        $('.filter-apply-button button, .view_available_trips').on('click', function (e) {
+            e.preventDefault();
+            const filterData = getFilterData();
+            applyFilter(filterData);
+        });
+
     });
 
 })(jQuery);
